@@ -106,5 +106,11 @@ venv.bak/
 # mypy
 .mypy_cache/
 
+# ModelZoo
+models/
+
+# wiki
+onnx-tensorflow.wiki/
+
 *.cf
 *.tf

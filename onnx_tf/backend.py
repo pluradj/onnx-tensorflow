@@ -257,7 +257,7 @@ class TensorflowBackend(Backend):
 
     def validate_initializer_name(name):
       # Prepend a unique suffix if leading charater is "_"
-      name = get_unique_suffix() + name if name[0] is "_" else name
+      name = get_unique_suffix() + name if name[0] == "_" else name
 
       # Replace ":" with "_tf_" and append a unique suffix for
       # traceability
