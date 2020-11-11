@@ -1,0 +1,48 @@
+name: ModelZoo test
+
+on:
+  push:
+    branches:
+      - master
+      - mz_*
+    tags:
+      - v*
+
+jobs:
+  conversion-test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout ONNX-TF
+      uses: actions/checkout@v2
+    - name: Checkout ONNX models
+      uses: actions/checkout@v2
+      with:
+        repository: onnx/models
+        path: models
+    - name: Checkout ONNX-TF wiki
+      uses: actions/checkout@v2
+      with:
+        repository: pluradj/onnx-tensorflow.wiki
+        path: wiki
+    - uses: actions/setup-python@v2
+      with:
+        python-version: '3.6'
+    - name: Install dependencies
+      run: |
+        sudo apt-get install git-lfs
+        python -m pip install --upgrade pip
+        pip install flake8 pytest onnx==1.7.0 tensorflow-cpu==2.3.1 tensorflow-addons==0.11.2
+        pip install -e .
+    - name: Run ModelZoo tests
+      run: |
+        python test/test_modelzoo.py -m models -o wiki -v
+    - name: Push wiki content
+      uses: Andrew-Chen-Wang/github-wiki-action@v2
+      env:
+        # Make sure you have that / at the end. We use rsync
+        # WIKI_DIR's default is wiki/
+        WIKI_DIR: wiki/
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # These are used for the wiki commit author
+        GH_MAIL: ${{ github.event.pusher.email }}
+        GH_NAME: ${{ github.event.pusher.name }}
